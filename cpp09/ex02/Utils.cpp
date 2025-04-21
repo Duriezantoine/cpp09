@@ -12,6 +12,7 @@ void    sort_pair(std::pair <int*, int*>* tab, int nbr_container)
     {
         if(tab[i].second == NULL)
             break;
+        printf("\n1first|%d|second|%d|", *tab[i].first, *tab[i].second);
         if(*tab[i].first < *tab[i].second)
         {
             save_one = *tab[i].first;
@@ -111,6 +112,8 @@ void insertFinality(std::pair<int*, int*>*tab, std::list<int>&finality)
 void searchpair(std::list<int>&finality, std::pair <int*, int*>*new_tab, int nbr_container, std::pair<int*, int*>*save, int nbr)
 {
     int i = 0;
+    printf("\nBig SmillCONTAINER = |%d| \n", nbr_container);
+    // printab(new_tab, nbr_container, finality);
     if(nbr_container==nbr)
     {
         (void)save;
@@ -118,8 +121,10 @@ void searchpair(std::list<int>&finality, std::pair <int*, int*>*new_tab, int nbr
     }
     if(nbr_container == 1)
         return;
+    
     for(i = 0; i != nbr_container ; i++)
     {    
+        //C'est la qu'il fqut mettre le jaobIndex
         int *b ;
         int ok = 0;
         std::list<int>::iterator it ;
@@ -133,7 +138,8 @@ void searchpair(std::list<int>&finality, std::pair <int*, int*>*new_tab, int nbr
         {
             it = std::find (finality.begin(), finality.end(), *j);
             if(it != finality.end())
-                return;//J'hesite a mettre un break
+            printf("\nVoici le nbr|%d|\n", *j);
+            return;//J'hesite a mettre un break
         }
         while(it != finality.begin())
         {
@@ -143,6 +149,7 @@ void searchpair(std::list<int>&finality, std::pair <int*, int*>*new_tab, int nbr
                 {
                     ++it;
                     finality.insert(it, *j);
+                    printf("\nVoici le nbr|%d|\n", *j);
                     ok++;
                     break;
                 }
@@ -162,54 +169,13 @@ void searchpair(std::list<int>&finality, std::pair <int*, int*>*new_tab, int nbr
         if(it == finality.begin() && ok ==0)
         {
             if(*it < *b)
-                ++it;
+            ++it;
             finality.insert(it, *b);
         }
+        printf("\nVoici le nbrsecond|%d|\n", *b);
+
     }
 }
-
-void recursif_tab(int nbr_container, std::pair<int*, int*>& tab, std::list<int>&finality, std::pair<int*, int*> &save,int nbr)
-{
-    int new_nbr_container;
-    std::list<int>out; 
-    
-    new_nbr_container = (nbr_container/2);
-    if(nbr_container %2 != 0)
-        new_nbr_container++;
-    
-    std::pair <int* ,int* > new_tab[new_nbr_container];
-    tabInit(new_tab, new_nbr_container);
-    insertTab(&tab, new_tab ,nbr_container, out);
-    if(new_nbr_container == 1)
-    {
-        sort_pair(new_tab, new_nbr_container);
-        insertFinality(new_tab, finality);
-    }
-    
-    else
-    {
-        printf("Avant sortPair\n");
-        printab(&tab, nbr_container, finality);
-        sort_pair(new_tab, new_nbr_container);
-        printf("\nApres sortPair\n");
-        printab(&tab, nbr_container, finality);
-        recursif_tab(new_nbr_container, *new_tab, finality, save, nbr);
-    }
-    // printf("Avant\n");
-    // printf("Apres");
-    searchpair(finality, new_tab, new_nbr_container, &save, nbr);    
-}
-
-void freetab(std::pair <int*,int*> *tab, int nbr_container)
-{
-    for (int i = 0; i < nbr_container; i++)
-    {
-        delete tab[i].first;
-        if(tab[i].second != NULL)
-            delete tab[i].second;
-    }
-}
-
 void deepCopyTab(const std::pair<int*, int*> src[], std::pair<int*, int*> dest[], int nbr_container) {
     for (int i = 0; i < nbr_container; i++) {
         if (src[i].first != NULL) {
@@ -225,6 +191,50 @@ void deepCopyTab(const std::pair<int*, int*> src[], std::pair<int*, int*> dest[]
         }
     }
 }
+
+void freetab(std::pair <int*,int*> *tab, int nbr_container)
+{
+    for (int i = 0; i < nbr_container; i++)
+    {
+        delete tab[i].first;
+        if(tab[i].second != NULL)
+            delete tab[i].second;
+    }
+}
+void recursif_tab(int nbr_container, std::pair<int*, int*>* tab, std::list<int>& finality, std::pair<int*, int*>* save, int nbr)
+{
+    int new_nbr_container;
+    std::list<int> out; 
+    
+    new_nbr_container = (nbr_container/2);
+    if(nbr_container %2 != 0)
+        new_nbr_container++;
+    
+    std::pair<int*, int*> new_tab[new_nbr_container];
+    tabInit(new_tab, new_nbr_container);
+    insertTab(tab, new_tab, nbr_container, out);
+    
+    if(new_nbr_container == 1)
+    {
+        sort_pair(new_tab, new_nbr_container);
+        insertFinality(new_tab, finality);
+    }
+    else
+    {
+        
+        sort_pair(new_tab, new_nbr_container);
+        // Faire une copie profonde de new_tab avant l'appel récursif
+        std::pair<int*, int*> recursive_tab[new_nbr_container];
+        deepCopyTab(new_tab, recursive_tab, new_nbr_container);
+        
+        recursif_tab(new_nbr_container, recursive_tab, finality, save, nbr);
+        
+        // Libérer la mémoire de recursive_tab après l'appel
+        freetab(recursive_tab, new_nbr_container);
+    }
+    searchpair(finality, tab, nbr_container, save, nbr);    
+}
+
 
 // Fonction pour calculer le nᵉ terme de la suite de Jacobsthal
 int jacobsthal(int n)
@@ -264,14 +274,16 @@ void init(char **arg, int ac, std::list<int>&finality)
     
     //Save with free
     save = nbr_container;
-
+    
     //Mise en place d'une copie profondes
     std::pair<int*, int*> copy[nbr_container];
     deepCopyTab (tab, copy, nbr_container);
-
-    printab(tab, nbr_container, finality);
+    
+    // printab(tab, nbr_container, finality);
     //Mise en place de la methode recursive
-    recursif_tab(nbr_container,*tab, finality, *copy, save);
+    recursif_tab(nbr_container, tab, finality, copy, save);
+    
+    printList(finality);
 
     //Mise en place du calcul permettant de determiner la taille ds mins 
     // int size_min =  ((ac - 1) / 2);//Faire attention si il y a un vide
@@ -300,11 +312,10 @@ void init(char **arg, int ac, std::list<int>&finality)
     // index_Jacob[d] = nbr_container - save_number - 1;
     // printf("Suite de jacob lastcontainer|%d|SaveNumber|%d|lastindexJacob|%d|", save_jacob, save_number, index_Jacob[d]);//SaveNumber start = 0
     
-    printab(copy, nbr_container, finality);
+    // printab(copy, nbr_container, finality);
     //Mise en place du'une boucle permettant d'inclure a l'interieur 
         
     //Verification de la list
-    printList(finality);
         
         // printf("\nNombre a allternener1|%d|avec iterateur|%d|\n alterner2|%d|avec iterateur |%d||\n", *copy[iterator_index].second,iterator_index ,*copy[iterator_index + i].second, iterator_index+i);
         //Mise en place de la destruction du tableau
