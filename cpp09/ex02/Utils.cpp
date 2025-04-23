@@ -137,10 +137,24 @@ void reverseRange(std::pair<int *, int *> *new_tab, int start, int end)
     if (end < start || end == start)
         return;
 
-    // if(start != 0)
-    //     std::reverse(new_tab + start, new_tab + end );
-    printf("\nChange start = |%d| end = |%d| 1 =|%d| 2=|%d|\n", start, end, *new_tab[start].first, *new_tab[end].first);
+    printf("\nInversion de la plage : start = |%d| à end = |%d|\n", start, end);
+    
+    // Affichage des éléments avant inversion
+    printf("Avant inversion : ");
+    for (int i = start; i <= end; i++) {
+        printf("|%d| ", *new_tab[i].first);
+    }
+    printf("\n");
+    
+    // Inversion de la plage
     std::reverse(new_tab + start, new_tab + end + 1);
+    
+    // Affichage des éléments après inversion
+    printf("Après inversion : ");
+    for (int i = start; i <= end; i++) {
+        printf("|%d| ", *new_tab[i].first);
+    }
+    printf("\n");
 }
 
 void jacobIndexUtils(std::pair<int *, int *> *new_tab, int nbr_container, int jacobIndex[], std::list<int> &finality)
@@ -168,18 +182,14 @@ void jacobIndexUtils(std::pair<int *, int *> *new_tab, int nbr_container, int ja
             i = nbr_container - save - 1;
         }
         printf("\nSave= |%d|, jacobIndex[j](i)=|%d|, index-container=|%d| i=|%d|", save, i, index_container, i);
-        for (index_jacob = 0; index_jacob < i; ++index_jacob)
+        result1 = save + index_jacob;
+        result2 = save + i;
+        printf("\nResult|1=|%d|I|%d|index-container|%d|", result1, result2, index_container);
+        if (result2 >= nbr_container)
         {
-
-            result1 = save + index_jacob;
-            result2 = save + i - index_jacob;
-            printf("\nResult|1=|%d|I|%d|index-container|%d|", result1, result2, index_container);
-            if (result2 >= nbr_container)
-            {
-                break;
-            }
-            reverseRange(new_tab, result1, result2);
+            break;
         }
+        reverseRange(new_tab, result1, result2);
         if (save >= index_container)
             break;
         save = jacobIndex[j] + save;
