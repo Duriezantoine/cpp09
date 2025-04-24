@@ -6,6 +6,12 @@
 #include <iostream>
 #include <algorithm>
 #include <utility>
+
+/*
+    Autiliser
+    std::ptrdiff_t p = -10;
+    int i = static_cast<int>(p); 
+*/
 void sort_pair(std::pair<int *, int *> *tab, int nbr_container)
 {
     int save_one;
