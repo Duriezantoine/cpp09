@@ -6,12 +6,6 @@
 #include <iostream>
 #include <algorithm>
 #include <utility>
-
-/*
-    Autiliser
-    std::ptrdiff_t p = -10;
-    int i = static_cast<int>(p); 
-*/
 void sort_pair(std::pair<int *, int *> *tab, int nbr_container)
 {
     int save_one;
@@ -30,7 +24,7 @@ void sort_pair(std::pair<int *, int *> *tab, int nbr_container)
 }
 
 // A supprimer par la suite
-void printab(std::pair<int *, int *> *tab, int nbr_container, const std::list<int> &out)
+void printab(std::pair<int *, int *> *tab, int nbr_container, const std::vector<int> &out)
 {
     // (void)out;
     printf("nbr_container | %d |\n", nbr_container);
@@ -45,9 +39,8 @@ void printab(std::pair<int *, int *> *tab, int nbr_container, const std::list<in
         // printf(" second | %d | i | %d |\n",  *tab[i].second, i);
     }
 
-    // // Affichage de la liste out
-    printf("out list : ");
-    for (std::list<int>::const_iterator it = out.begin(); it != out.end(); ++it)
+    printf("out vector : ");
+    for (std::vector<int>::const_iterator it = out.begin(); it != out.end(); ++it)
         printf("| %d | ", *it);
     printf("\n");
 }
@@ -70,7 +63,7 @@ void tabInit(std::pair<int *, int *> *tab, int nbr_container)
         tab[i] = std::pair<int *, int *>(NULL, NULL);
 }
 
-void insertTab(std::pair<int *, int *> *tab, std::pair<int *, int *> *new_tab, int nbr_container, std::list<int> &out)
+void insertTab(std::pair<int *, int *> *tab, std::pair<int *, int *> *new_tab, int nbr_container, std::vector<int> &out)
 {
     int i;
     int j;
@@ -101,18 +94,18 @@ void insertTab(std::pair<int *, int *> *tab, std::pair<int *, int *> *new_tab, i
     return;
 }
 
-void printList(const std::list<int> &lst)
+void printVector(const std::vector<int> &vec)
 {
-    std::cout << "Contenu de la liste : ";
-    std::list<int>::const_iterator it;
-    for (it = lst.begin(); it != lst.end(); ++it)
+    std::cout << "Contenu du vecteur : ";
+    std::vector<int>::const_iterator it;
+    for (it = vec.begin(); it != vec.end(); ++it)
     {
         std::cout << *it << " ";
     }
     std::cout << std::endl;
 }
 
-void insertFinality(std::pair<int *, int *> *tab, std::list<int> &finality)
+void insertFinality(std::pair<int *, int *> *tab, std::vector<int> &finality)
 {
     int *b = tab[0].first;
     int *a = tab[0].second;
@@ -148,7 +141,7 @@ void reverseRange(std::pair<int *, int *> *new_tab, int start, int end)
     printf("\n");
 }
 
-void jacobIndexUtils(std::pair<int *, int *> *new_tab, int nbr_container, std::list<int> &finality)
+void jacobIndexUtils(std::pair<int *, int *> *new_tab, int nbr_container, std::vector<int> &finality)
 {
     printf("\nBig SmillCONTAINER = |%d| \n", nbr_container);
     printab(new_tab, nbr_container, finality);
@@ -179,9 +172,10 @@ void jacobIndexUtils(std::pair<int *, int *> *new_tab, int nbr_container, std::l
     printab(new_tab, nbr_container, finality);
 }
 
-void searchpair(std::list<int> &finality, std::pair<int *, int *> *new_tab, int nbr_container, int nbr)
+void searchpair(std::vector<int> &finality, std::pair<int *, int *> *new_tab, int nbr_container, int nbr)
 {
     int i = 0;
+    (void)nbr;
     printf("\nBig SmillCONTAINER = |%d| \n", nbr_container);
     jacobIndexUtils(new_tab, nbr_container, finality);
 
@@ -191,8 +185,8 @@ void searchpair(std::list<int> &finality, std::pair<int *, int *> *new_tab, int 
     for (i = 0; i != nbr_container; i++)
     {
         int *b;
-        int ok = 0;
-        std::list<int>::iterator it;
+        // int ok = 0;
+        std::vector<int> ::iterator it;
         int *j = new_tab[i].first;
         if (new_tab[i].second != NULL)
         {
@@ -206,39 +200,10 @@ void searchpair(std::list<int> &finality, std::pair<int *, int *> *new_tab, int 
                 printf("\nVoici le nbr non mis|%d|\n", *j);
             continue; // J'hesite a mettre un break
         }
-        
-        while (it != finality.begin())
-        {
-            if (new_tab[i].second == NULL)
-            {
-                if (*j > *it)
-                {
-                    ++it;
-
-                    finality.insert(it, *j);
-                    printf("\nVoici le nbr Normal bizare|%d|\n", *j);
-                    ok++;
-                    break;
-                }
-            }
-            else
-            {
-                if (*b > *it)
-                {
-                    ++it;
-                    finality.insert(it, *b);
-                    ok++;
-                    break;
-                }
-            }
-            --it;
-        }
-        if (it == finality.begin() && ok == 0)
-        {
-            if (*it < *b)
-                ++it;
-            finality.insert(it, *b);
-        }
+        std::vector<int> :: iterator low;
+        low = std::lower_bound(finality.begin(),it, *b);
+        printf("Je devrais inserr|%d|", *b);
+        finality.insert(low, *b);
         printf("\nVoici le nbrsecond normal|%d|\n", *b);
     }
 }
@@ -276,10 +241,10 @@ void freetab(std::pair<int *, int *> *tab, int nbr_container)
             delete tab[i].second;
     }
 }
-void recursif_tab(int nbr_container, std::pair<int *, int *> *tab, std::list<int> &finality, int nbr)
+void recursif_tab(int nbr_container, std::pair<int *, int *> *tab, std::vector<int> &finality, int nbr)
 {
     int new_nbr_container;
-    std::list<int> out;
+    std::vector<int> out;
 
     new_nbr_container = (nbr_container / 2);
     if (nbr_container % 2 != 0)
@@ -305,7 +270,7 @@ void recursif_tab(int nbr_container, std::pair<int *, int *> *tab, std::list<int
     searchpair(finality, tab, nbr_container, nbr);
 }
 
-void init(char **arg, int ac, std::list<int> &finality)
+void init(char **arg, int ac, std::vector<int> &finality)
 {
     int i = 0;
     int j = 0;
@@ -330,6 +295,6 @@ void init(char **arg, int ac, std::list<int> &finality)
     // Save with free
     save = nbr_container;
     recursif_tab(nbr_container, tab, finality,  save);
-    printList(finality);
+    printVector(finality);
     freetab(tab, save);
 }

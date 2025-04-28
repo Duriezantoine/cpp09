@@ -9,7 +9,7 @@ class Container
     private:
         // std::vector<int> stackVector;
         // std::list <int> stackList;
-        std::list<int> finality;
+        std::vector<int> finality;
         std::list<int> out;
     public:
         ~Container();
